@@ -107,21 +107,6 @@ Notes:
 - The script attempts to use `sdkmanager` and will require a working JDK (Java). If you don't have Java, install an OpenJDK (11+) first.
 - Installing Android Studio remains the recommended approach as it provides an SDK Manager UI and emulators.
 
-Java (JDK) notes
-
-If you see errors about Java when running `./scripts/install-android-sdk.sh` or `sdkmanager`, install an OpenJDK (11+) and ensure it's available to the system. On macOS using Homebrew:
-
-```bash
-brew install openjdk@17
-# Then follow brew's caveats. For example:
-sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
-echo 'export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-java -version
-```
-
-After Java is installed, re-run the SDK installer script.
-
 ## Getting Started
 
 This project is a starting point for a Flutter application.
