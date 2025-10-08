@@ -12,7 +12,7 @@ class LoaderPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Home of Medical Education', style: TextStyle(fontSize: 36, color: Colors.white)),
+              const Text('Medical Education', style: TextStyle(fontSize: 36, color: Colors.white)),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).push(
