@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/loader_page.dart';
+import 'pages/create_account_page.dart';
 
 void main() => runApp(const MyApp());
 
