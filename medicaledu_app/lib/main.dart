@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'medicaledu',
       theme: ThemeData(),
-  home: const LoaderPage(),
+      home: const LoaderPage(),
     );
   }
 }

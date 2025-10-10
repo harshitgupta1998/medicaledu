@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'create_account_page.dart';
+import 'home_page.dart';
 
 class ProfileInfoPage extends StatefulWidget {
   const ProfileInfoPage({super.key});
@@ -45,7 +45,12 @@ class _ProfileInfoPageState extends State<ProfileInfoPage> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const CreateAccountPage()));
+      final name = _nameController.text.trim();
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => HomePage(userName: name.isEmpty ? 'User' : name, createdAt: DateTime.now().subtract(const Duration(days: 1))),
+        ),
+      );
     }
   }
 

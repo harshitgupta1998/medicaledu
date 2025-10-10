@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_page.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -10,16 +11,17 @@ class CreateAccountPage extends StatefulWidget {
 class _CreateAccountPageState extends State<CreateAccountPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   DateTime? _dob;
   bool _obscure = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
     _usernameController.dispose();
-    _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -38,17 +40,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      // For now just show a snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created (demo)')),
+      final name = _usernameController.text.trim();
+      // After signup, navigate to HomePage and clear the previous stack
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => HomePage(userName: name.isEmpty ? 'User' : name, createdAt: DateTime.now().subtract(const Duration(days: 1))),
+        ),
+        (route) => false,
       );
     }
   }
 
-  String? _validateEmail(String? v) {
-    if (v == null || v.isEmpty) return 'Enter email';
-    final emailRegex = RegExp(r"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-    if (!emailRegex.hasMatch(v)) return 'Enter a valid email';
+  String? _validateConfirmPassword(String? v) {
+    if (v == null || v.isEmpty) return 'Confirm password';
+    if (v != _passwordController.text) return 'Passwords do not match';
     return null;
   }
 
@@ -58,7 +63,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     final hasUpper = v.contains(RegExp(r'[A-Z]'));
     final hasLower = v.contains(RegExp(r'[a-z]'));
     final hasDigit = v.contains(RegExp(r'\d'));
-    final hasSpecial = v.contains(RegExp(r'[!@#\$&*~%^()_+\-=\[\]{};:\\|,.<>\/?]'));
+    final hasSpecial = v.contains(RegExp(r'[!@#\$&*~%^()_+\-=[\]{};:\\|,.<>\/?]'));
     if (!hasUpper || !hasLower || !hasDigit || !hasSpecial) {
       return 'Password must include upper, lower, number & special char';
     }
@@ -81,10 +86,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   onPressed: () => Navigator.maybePop(context),
                 ),
                 const SizedBox(height: 8),
-                Text('Create an account',
-                    style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text('Create an account', style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text('Enter your account details below or '),
+                const Text('Enter your account details below or '),
                 const SizedBox(height: 24),
 
                 Form(
@@ -121,16 +125,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      const Text('Email'),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(border: OutlineInputBorder()),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: _validateEmail,
-                      ),
-                      const SizedBox(height: 16),
-
                       const Text('Password'),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -144,6 +138,22 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           ),
                         ),
                         validator: _validatePassword,
+                      ),
+
+                      const SizedBox(height: 16),
+                      const Text('Verify Password'),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: _obscureConfirm,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscureConfirm ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                          ),
+                        ),
+                        validator: _validateConfirmPassword,
                       ),
 
                       const SizedBox(height: 24),

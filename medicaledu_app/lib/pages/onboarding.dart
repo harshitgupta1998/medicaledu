@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'create_account_page.dart';
 import 'profile_info_page.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -114,7 +113,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           if (_index < 4) {
                             _goTo(_index + 1);
                           } else {
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const ProfileInfoPage()));
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileInfoPage()));
                           }
                         },
                         icon: const Icon(Icons.arrow_forward),
@@ -274,7 +273,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     // validate PIN (basic)
                     final pin = _pinControllers.map((c) => c.text).join();
                     if (pin.length == 4) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const ProfileInfoPage()));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileInfoPage()));
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter the 4-digit code')));
                     }
