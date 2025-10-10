@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'create_account_page.dart';
+import '../models/user_profile.dart';
 
 class ProfileInfoPage extends StatefulWidget {
   const ProfileInfoPage({super.key});
@@ -46,11 +47,11 @@ class _ProfileInfoPageState extends State<ProfileInfoPage> {
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
       final name = _nameController.text.trim();
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => HomePage(userName: name.isEmpty ? 'User' : name, createdAt: DateTime.now().subtract(const Duration(days: 1))),
-        ),
-      );
+      final email = _emailController.text.trim();
+      final exam = _examController.text.trim();
+      // Save to singleton profile
+      UserProfile.instance.setBasicInfo(name: name, email: email, examName: exam, examDate: _date ?? DateTime.now());
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CreateAccountPage()));
     }
   }
 
