@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "37141810916",
+    "project_id": "medicaledu-ac337",
+    "storage_bucket": "medicaledu-ac337.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37141810916:android:3ce44fc4faa8d3850ca6f1",
+        "android_client_info": {
+          "package_name": "com.example.medicaledu_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEg2Z0tiI8P5DC1ZsN8AgO-P7DZwAeoxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

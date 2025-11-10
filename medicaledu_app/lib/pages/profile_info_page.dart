@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'create_account_page.dart';
+import 'dart:developer' as developer;
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 import '../models/user_profile.dart';
 
 class ProfileInfoPage extends StatefulWidget {
@@ -51,7 +55,71 @@ class _ProfileInfoPageState extends State<ProfileInfoPage> {
       final exam = _examController.text.trim();
       // Save to singleton profile
       UserProfile.instance.setBasicInfo(name: name, email: email, examName: exam, examDate: _date ?? DateTime.now());
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => CreateAccountPage()));
+      // Debug print: entering submit and values
+      // ignore: avoid_print
+      print('[_submit] name=$name email=$email exam=$exam date=${_date ?? DateTime.now()}');
+      // Save to Firestore
+      _saveToFirestore(name: name, email: email, exam: exam, date: _date ?? DateTime.now());
+    }
+  }
+
+  Future<void> _saveToFirestore({required String name, required String email, required String exam, required DateTime date}) async {
+    // Use a local mounted flag to avoid using BuildContext after async gaps.
+    final messenger = ScaffoldMessenger.of(context);
+    // Show UI and print to terminal immediately so we know the save started.
+    // ignore: avoid_print
+    print('[save] Showing saving SnackBar');
+    messenger.showSnackBar(const SnackBar(content: Text('Saving profile...')));
+    try {
+      // Ensure Firebase is initialized (protect against cases where this page
+      // is reached before main() finished initialization). Calling
+      // initializeApp again is a no-op if an app already exists.
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+  // Use the default Firestore database and collection 'users-test'.
+  final users = FirebaseFirestore.instance.collection('users-test');
+      // Debug print: about to set document
+      // ignore: avoid_print
+      print('[save] About to set document in users-test');
+      final doc = users.doc();
+      await doc.set({
+        'name': name,
+        'email': email,
+        'exam': exam,
+        'examDate': Timestamp.fromDate(date),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // Debug print after set completed
+      // ignore: avoid_print
+      print('[save] await doc.set() completed');
+
+      // After awaiting, ensure widget is still mounted before using context.
+      if (!mounted) return;
+
+      // Show the created document ID in the UI so you get immediate confirmation.
+      final createdId = doc.id;
+  developer.log('Firestore write succeeded, docId=$createdId');
+  // Also print to the terminal so `flutter run` output shows the doc id.
+  // This helps when DevTools isn't open.
+  // ignore: avoid_print
+  print('Firestore write succeeded, docId=$createdId');
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(SnackBar(content: Text('Profile saved (id: $createdId)')));
+
+      if (!mounted) return;
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateAccountPage()));
+    } catch (e, s) {
+      // Log to browser/console for easier debugging (shows network/errors in DevTools).
+  developer.log('Firestore save failed', error: e, stackTrace: s);
+  // ignore: avoid_print
+  print('Firestore save failed: $e');
+      if (!mounted) return;
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(SnackBar(content: Text('Failed to save profile: $e')));
     }
   }
 
