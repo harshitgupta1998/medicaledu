@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'create_account_page.dart';
 import 'profile_info_page.dart';
 
@@ -166,7 +168,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   const SizedBox(height: 8),
                   Text('Welcome!', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  const Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor', style: TextStyle(color: Colors.black54)),
+                  const Text('Learn, practice, and excel with curated medical content and exam-focused study plans.', style: TextStyle(color: Colors.black54)),
                   const SizedBox(height: 24),
                   const Text('Phone Number'),
                   const SizedBox(height: 8),
@@ -190,7 +192,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     final phone = _phoneController.text.trim();
                     var digits = phone.replaceAll(RegExp(r'\D'), '');
                     if (digits.length > 10) digits = digits.substring(0, 10);
@@ -201,6 +203,34 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     setState(() {
                       _maskedPhone = _maskPhone(digits);
                     });
+
+                    // normalize and push to Firestore named DB
+                    var digitsNorm = digits;
+                    if (digitsNorm.length == 10) digitsNorm = '91$digitsNorm';
+                    final e164 = '+$digitsNorm';
+                    final masked = _maskPhone(digitsNorm);
+                    final url = Uri.parse('https://firestore.googleapis.com/v1/projects/medicaledu-ac337/databases/users-test/documents/phone-numbers');
+                    final body = jsonEncode({
+                      'fields': {
+                        'phone': {'stringValue': e164},
+                        'phoneMasked': {'stringValue': masked},
+                        'createdAt': {'timestampValue': DateTime.now().toUtc().toIso8601String()},
+                      }
+                    });
+                    try {
+                      print('[Onboarding] POST $url');
+                      print('[Onboarding] body: $body');
+                      final res = await http.post(url, headers: {'Content-Type': 'application/json'}, body: body);
+                      print('[Onboarding] response: ${res.statusCode} ${res.body}');
+                      if (res.statusCode >= 200 && res.statusCode < 300) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Phone saved')));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: ${res.statusCode}')));
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save error: $e')));
+                    }
+
                     _goTo(4);
                   },
                   child: const Text('Get OTP'),
