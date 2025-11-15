@@ -68,7 +68,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     body: 'Complete courses and earn recognition for your skills.',
                   ),
                   _buildOtpPage(),
-                  _buildVerificationPage(),
+                  _buildVerificationPage(), // OTP verification page commented out
                 ],
               ),
             ),
