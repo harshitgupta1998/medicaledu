@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'create_account_page.dart';
 
 class ProfileInfoPage extends StatefulWidget {
@@ -45,7 +47,44 @@ class _ProfileInfoPageState extends State<ProfileInfoPage> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const CreateAccountPage()));
+      final name = _nameController.text.trim();
+      final email = _emailController.text.trim();
+      final exam = _examController.text.trim();
+      final date = _date != null ? _date!.toIso8601String() : null;
+
+      final url = Uri.parse('https://firestore.googleapis.com/v1/projects/medicaledu-ac337/databases/users-test/documents/exams');
+      final body = jsonEncode({
+        'fields': {
+          'name': {'stringValue': name},
+          'email': {'stringValue': email},
+          'exam': {'stringValue': exam},
+          'dateOfAppearing': {'stringValue': date ?? ''},
+        }
+      });
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => const Center(child: CircularProgressIndicator()),
+      );
+      http.post(url, headers: {'Content-Type': 'application/json'}, body: body).then((res) {
+        Navigator.of(context).pop(); // close loading dialog
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile info saved')));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const CreateAccountPage()));
+        } else {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Save Failed'),
+              content: SingleChildScrollView(child: Text('Status: ${res.statusCode}\nBody: ${res.body}')),
+              actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('OK'))],
+            ),
+          );
+        }
+      }).catchError((e) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save error: $e')));
+      });
     }
   }
 
@@ -67,7 +106,7 @@ class _ProfileInfoPageState extends State<ProfileInfoPage> {
               children: [
                 Text('Tell us about yourself', style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                const Text('Lorem Ipsum', style: TextStyle(color: Colors.black54)),
+                const Text('Please provide your details to help us personalize your medical education experience.', style: TextStyle(color: Colors.black54)),
                 const SizedBox(height: 24),
                 Form(
                   key: _formKey,

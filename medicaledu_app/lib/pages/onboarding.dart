@@ -68,7 +68,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     body: 'Complete courses and earn recognition for your skills.',
                   ),
                   _buildOtpPage(),
-                  _buildVerificationPage(),
+                  _buildVerificationPage(), // OTP verification page commented out
                 ],
               ),
             ),
@@ -143,7 +143,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(width: 260, height: 260, decoration: BoxDecoration(color: Colors.grey[300], shape: BoxShape.circle)),
+                    ClipOval(
+                      child: Image.network(
+                        'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924',
+                        width: 260,
+                        height: 260,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 260,
+                          height: 260,
+                          color: Colors.grey[300],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
