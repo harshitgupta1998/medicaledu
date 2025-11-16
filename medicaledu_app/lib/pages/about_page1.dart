@@ -83,6 +83,22 @@ class _AboutPage1State extends State<AboutPage1> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
+            Center(
+              child: ClipOval(
+                child: Image.network(
+                  'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 120,
+                    height: 120,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             Text('Welcome!', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             const Text('Learn, practice, and excel with curated medical content and exam-focused study plans.'),
