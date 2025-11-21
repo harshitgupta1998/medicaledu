@@ -14,13 +14,21 @@ class AboutPage2 extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              // large circular placeholder
+              // large circular image
               Expanded(
                 child: Center(
-                  child: Container(
-                    width: 260,
-                    height: 260,
-                    decoration: BoxDecoration(color: Colors.grey[300], shape: BoxShape.circle),
+                  child: ClipOval(
+                    child: Image.network(
+                      'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6025.jpeg?alt=media&token=71cc221b-0b06-427c-9ba7-244d5493588a&cb=${DateTime.now().millisecondsSinceEpoch}',
+                      width: 260,
+                      height: 260,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 260,
+                        height: 260,
+                        color: Colors.grey[300],
+                      ),
+                    ),
                   ),
                 ),
               ),

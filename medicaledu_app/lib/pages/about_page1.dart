@@ -86,7 +86,7 @@ class _AboutPage1State extends State<AboutPage1> {
             Center(
               child: ClipOval(
                 child: Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924',
+                  'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924&cb=${DateTime.now().millisecondsSinceEpoch}',
                   width: 120,
                   height: 120,
                   fit: BoxFit.cover,

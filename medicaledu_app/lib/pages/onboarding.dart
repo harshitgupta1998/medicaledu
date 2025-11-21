@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'create_account_page.dart';
 import 'profile_info_page.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -44,6 +43,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
+  String _getImageForTitle(String title) {
+    switch (title) {
+      case 'Welcome':
+        return 'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924';
+      case 'Track Progress':
+        return 'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6025.jpeg?alt=media&token=71cc221b-0b06-427c-9ba7-244d5493588a';
+      case 'Get Certified':
+        return 'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6246.jpeg?alt=media&token=146fcf0a-ecfb-4119-b2a5-c5a2de176707';
+      default:
+        return 'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,14 +70,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   _buildPage(
                     title: 'Welcome',
                     body: 'Discover medical education content tailored for you.',
+                    imageUrl: _getImageForTitle('Welcome'),
                   ),
                   _buildPage(
                     title: 'Track Progress',
                     body: 'Watch your learning progress with simple milestones.',
+                    imageUrl: _getImageForTitle('Track Progress'),
                   ),
                   _buildPage(
                     title: 'Get Certified',
                     body: 'Complete courses and earn recognition for your skills.',
+                    imageUrl: _getImageForTitle('Get Certified'),
                   ),
                   _buildOtpPage(),
                   _buildVerificationPage(), // OTP verification page commented out
@@ -133,40 +148,42 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  Widget _buildPage({required String title, required String body}) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ClipOval(
-                      child: Image.network(
-                        'https://firebasestorage.googleapis.com/v0/b/medicaledu-ac337.firebasestorage.app/o/IMG_6426.jpeg?alt=media&token=ac162a89-cea3-4e65-9513-8c6199d9c924',
+  Widget _buildPage({required String title, required String body, required String imageUrl}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ClipOval(
+                    child: Image.network(
+                      imageUrl,
+                      width: 260,
+                      height: 260,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
                         width: 260,
                         height: 260,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 260,
-                          height: 260,
-                          color: Colors.grey[300],
-                        ),
+                        color: Colors.grey[300],
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 12),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(body, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black54))),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(body, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black54))),
+                ],
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildOtpPage() => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -188,7 +205,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(10)],
-                    decoration: InputDecoration(border: OutlineInputBorder()),
+                    decoration: const InputDecoration(border: OutlineInputBorder()),
                   ),
                 ],
               ),
@@ -202,14 +219,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: const Color(0xFF49505A),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
                   ),
                   onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
                     final phone = _phoneController.text.trim();
                     var digits = phone.replaceAll(RegExp(r'\D'), '');
                     if (digits.length > 10) digits = digits.substring(0, 10);
                     if (digits.isEmpty || digits.length < 7) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a valid phone number')));
+                      messenger.showSnackBar(const SnackBar(content: Text('Enter a valid phone number')));
                       return;
                     }
                     setState(() {
@@ -230,19 +248,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       }
                     });
                     try {
-                      print('[Onboarding] POST $url');
-                      print('[Onboarding] body: $body');
-                      final res = await http.post(url, headers: {'Content-Type': 'application/json'}, body: body);
-                      print('[Onboarding] response: ${res.statusCode} ${res.body}');
+                      debugPrint('[Onboarding] POST $url');
+                      debugPrint('[Onboarding] body: $body');
+                      final res = await http.post(url, headers: const {'Content-Type': 'application/json'}, body: body);
+                      if (!mounted) return;
+                      debugPrint('[Onboarding] response: ${res.statusCode} ${res.body}');
                       if (res.statusCode >= 200 && res.statusCode < 300) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Phone saved')));
+                        messenger.showSnackBar(const SnackBar(content: Text('Phone saved')));
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: ${res.statusCode}')));
+                        messenger.showSnackBar(SnackBar(content: Text('Save failed: ${res.statusCode}')));
                       }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save error: $e')));
+                      if (!mounted) return;
+                      messenger.showSnackBar(SnackBar(content: Text('Save error: $e')));
                     }
 
+                    if (!mounted) return;
                     _goTo(4);
                   },
                   child: const Text('Get OTP'),
@@ -310,10 +331,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: const Color(0xFF49505A),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
                   ),
                   onPressed: () {
-                    // validate PIN (basic)
                     final pin = _pinControllers.map((c) => c.text).join();
                     if (pin.length == 4) {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const ProfileInfoPage()));
