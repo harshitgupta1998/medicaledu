@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'pages/loader_page.dart';
 import 'pages/cards_page.dart';
 
 void main() => runApp(const MyApp());
@@ -12,10 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'medicaledu',
       theme: ThemeData(),
-      home: const LoaderPage(),
-      routes: {
-        '/cards': (context) => const CardsPage(),
-      },
+      home: const CardsPage(),
     );
   }
 }
