@@ -26,7 +26,7 @@ class CardsPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FlashCardPage()),
+                  MaterialPageRoute(builder: (context) => FlashCardPage(flashcardId: 'BBiwMIX4gYxkUOk5aOFv')),
                 );
               },
               child: Padding(
